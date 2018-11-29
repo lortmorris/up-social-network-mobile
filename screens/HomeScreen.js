@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 
+import { ListItem } from 'react-native-material-ui';
 import { compose, setStatic, lifecycle, withState } from 'recompose';
 import { MonoText } from '../components/StyledText';
 import moment from 'moment';
@@ -21,39 +22,10 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingTop: 1,
   },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  itemContainer: {
-    flex: 1,
-    height: 180,
-    width: 300,
-    borderColor: 'rgba(200,200,200, 1)',
-    borderWidth: 1,
-    marginTop: 4,
-    padding: 2
-  },
-  itemContainerHeader: {
-    flexDirection: 'column',
-  },
   carImage: {
     width: 100,
     height: 80,
     marginTop: 3,
-  },
-  usernameText: {
-    fontSize: 14,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'left',
-  },
-  timeText: {
-    fontSize: 12,
-    color: 'rgba(96,100,109, 0.5)',
-    lineHeight: 24,
-    textAlign: 'right',
   },
   ratingText: {
     fontSize: 20,
@@ -62,14 +34,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   itemTotalLikesText: {
+    flex: 1,
     fontSize: 12,
     color: 'rgba(80,80,80, 1)',
     textAlign: 'left',
   },
   itemTotalCommentsText: {
+    flex: 1,
     fontSize: 12,
     color: 'rgba(80,80,80, 1)',
-    textAlign: 'left',
+    textAlign: 'right',
   },
 });
 
@@ -83,43 +57,56 @@ const fetchFeed = () => {
 };
 
 const renderItem = ({ item }) => (
-  <View style={styles.itemContainer}>
-    <View style={styles.itemContainerHeader}>
-      <Text style={styles.usernameText}>{`${item.user.firstname} ${item.user.lastname}`}</Text>
-      <Text style={styles.timeText}>{moment(item.added).startOf('hour').fromNow()}</Text>
-    </View>
-    {item.photo && (
-      <Image
-        source={{uri: `http://localhost:5000/${item.photo}`}}
-        style={styles.carImage}
-        />
-      )
-    }
-    {item.comment && (
-      <MonoText>{item.comment}</MonoText>
-      )
-    }
-    {item.rating && (
-      <Text style={styles.ratingText}>{item.rating}</Text>
-      )
-    }
 
-    <View>
-      <Text style={styles.itemTotalLikesText}>Likes: {item.totalLikes}</Text>
-      <Text style={styles.itemTotalCommentsText}>Comments: {item.totalComments}</Text>
-    </View>
-  </View>
+    <ListItem
+      divider
+
+      numberOfLines='dynamic'
+      leftElement={(<Text>{`${item.user.firstname} ${item.user.lastname}`}</Text>)}
+      rightElement={(<Text style={styles.timeText}>{moment(item.added).startOf('hour').fromNow()}</Text>)}
+      children={(<Text>Image</Text>)}
+      onPress={() => {}}
+      centerElement={(
+        <View>
+            {item.photo && (
+              <View>
+                <Image
+                  source={{uri: `http://localhost:5000/${item.photo}`}}
+                  style={styles.carImage}
+                  />
+              </View>
+              )
+            }
+            {item.comment && (
+              <View>
+                <MonoText>{item.comment}</MonoText>
+              </View>
+              )
+            }
+            {item.rating && (
+              <View>
+                <Text style={styles.ratingText}>{item.rating}</Text>
+              </View>
+              )
+            }
+
+          <View>
+            <Text style={styles.itemTotalLikesText}>Likes: {item.totalLikes}</Text>
+            <Text style={styles.itemTotalCommentsText}>Comments: {item.totalComments}</Text>
+          </View>
+        </View>
+      )}
+    />
+
 );
 
 const HomeScreen = ({ feed }) => (
   <View style={styles.container}>
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.welcomeContainer}>
         <FlatList
           data={feed}
           renderItem={renderItem}
         />
-      </View>
     </ScrollView>
   </View>
 );
